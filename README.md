@@ -32,6 +32,49 @@ L'ordinateur choisit aléatoirement et le résultat s'affiche à l'écran.
    
 ---
 
+## 🐍✨ Explication des fichiers Python
+
+---
+
+### 🕹️ **`game.py`** — *Gestion de la partie*
+> Contient toute la logique principale du jeu 🎮  
+
+📜 **Fonctionnalités principales :**  
+- 🔁 Boucle principale du jeu  
+- 👤 Gestion des entrées du joueur et de l’ordinateur  
+- 🏆 Gestion des victoires, défaites et du score  
+
+---
+
+### 🚀 **`begining.py`** — *Lancement de la partie*
+> Responsable du démarrage du jeu et de la navigation dans le menu 🧭  
+
+📜 **Fonctionnalités principales :**  
+- 🏠 Affichage du menu d’accueil  
+- ▶️ Lancement de la boucle principale du jeu  
+
+---
+
+### ⚙️ **`var.py`** — *Gestion des variables*
+> Centralise toutes les variables globales pour une meilleure organisation 🧩  
+
+📜 **Fonctionnalités principales :**  
+- 🧠 Stockage des variables globales  
+- 🛠️ Facilite la modification et la maintenance du code  
+
+---
+
+### 🧩 **`main.py`** — *Point d’entrée du programme*
+> Fichier principal qui exécute le jeu 💥  
+
+📜 **Fonctionnalités principales :**  
+- 🚪 Démarre le programme  
+- 🔗 Lance les autres modules nécessaires  
+
+---
+
+
+    
 ## 🗂️ Arborescence du projet
 
 ``````
