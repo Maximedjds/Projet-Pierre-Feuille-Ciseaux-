@@ -30,6 +30,7 @@ def begining():
     print("║  2. Quitter le jeu         ║")
     print("╚════════════════════════════╝")
     choice = int(input(" Votre choix: "))
+    print("\n")
     if choice > 2 or choice < 1:
         print(Fore.RED + "Valeur entrée incorrecte !\n")
         time.sleep(1)
