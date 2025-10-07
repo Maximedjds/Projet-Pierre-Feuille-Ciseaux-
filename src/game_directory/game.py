@@ -88,8 +88,15 @@ def get_winner():
 # Restart prompt (yes or no)
 def restart():
     choice = input(Fore.CYAN + "Voulez-vous rejouer ? (y/n)\n").lower()
-    if choice == "n":  # Player wants to quit
-        print(Fore.YELLOW + "Au revoir 👋")
+    if choice == "n":
+        print(Fore.YELLOW + """  
+          ___     _     _            _        _   
+         / _ \   | |   (_)          | |      | |  
+        / /_\ \  | |__  _  ___ _ __ | |_ ___ | |_ 
+        |  _  |  | '_ \| |/ _ \ '_ \| __/ _ \| __|
+        | | | |  | |_) | |  __/ | | | || (_) | |_       
+        \_| |_/  |_.__/|_|\___|_| |_|\__\___/ \__|
+                                                  """) # Goodbye Message
         var.in_game = False
     else:  # Player wants to continue (reset scores)
         var.score["Computer"] = 0
