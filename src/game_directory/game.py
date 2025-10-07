@@ -3,51 +3,61 @@ import random
 import time
 from colorama import Fore, Style, init
 
+# Reset Colours
 init(autoreset=True)
 
+# Possible options
 options = ["Pierre","Feuille","Ciseaux"]
 
-# Lance la boucle du jeu
+# Starts the main game loop
 def game_loop():
     while var.in_game:
-        player = player_choice()
-        time.sleep(1)
+        player = player_choice()  # Get player's choice as a string
+        if player == "stop":  # Stop the game if the player decides to quit
+            print(Fore.YELLOW + "\nAu revoir 👋")
+            break
+        time.sleep(1.5)  # Pause for better readability
         print(Fore.CYAN + "Au tour de l'ordinateur !")
+        time.sleep(1.5)
+        computer = computer_choice()  # Get computer's choice as a string
         time.sleep(1)
-        computer = computer_choice()
-        winner = fight(player, computer)
-        if winner == "Tie":
+        winner = fight(player, computer)  # Determine the round winner
+        if winner == "Tie":  # Draw
             print(Fore.YELLOW + "Égalité, personne ne gagne cette manche !\n")
         else:
             color = Fore.GREEN if "Vous" in winner else Fore.RED
-            print(color + f"{winner} gagné la manche !\n")
-        time.sleep(1)
-        print(Fore.MAGENTA + f"Le score est dorénavant:\n{var.score['Player']} - {var.score['Computer']}\n")
-        get_winner()
-        time.sleep(1)
+            print(color + f"{winner} gagné la manche !\n")  # Announce round winner
+        time.sleep(1.5)
+        print(Fore.MAGENTA + f"Le score est dorénavant:\n{var.score['Player']} - {var.score['Computer']}\n")  # Display the updated score
+        get_winner()  # Check if someone has won the game
+        time.sleep(1.5)
 
-# Récupère le choix du joueur
+# Get the player's choice
 def player_choice() -> str:
-    print(Fore.CYAN + "À votre tour !")
-    choice = int(input(Fore.BLUE + "1. Pierre\n2. Feuille\n3. Ciseaux\nVotre choix: "))
-    if choice > 3 or choice < 1:
+    print(Fore.CYAN + "À votre tour ! (Tapez 'stop' pour arrêter la partie)")
+    choice = input(Fore.BLUE + "1. Pierre\n2. Feuille\n3. Ciseaux\nVotre choix: ")  # Get player's input
+    if choice.lower() == "stop":  # If the player wants to stop the game
+        return choice.lower()
+    choice = int(choice)
+    if choice > 3 or choice < 1:  # Check if input is between 1 and 3
         print(Fore.RED + "Valeur entrée incorrecte !\n")
         time.sleep(1)
-        return player_choice()
+        return player_choice()  # Retry if input is invalid
     choice -= 1
     print(Fore.GREEN + f"Vous avez choisi {options[choice]} !\n")
-    return options[choice]
+    return options[choice]  # Return player's choice as a string (based on 'options' list)
 
-# Génère le choix de l'ordinateur
+# Generate the computer's choice
 def computer_choice() -> str:
+    random.seed()  # Generate a new seed for true randomness
     choice_index = random.randint(0, 2)
     print(Fore.YELLOW + f"L'ordinateur a choisi {options[choice_index]} !\n")
-    return options[choice_index]
+    return options[choice_index]  # Return computer's random choice
 
-# Détermine le gagnant du tour
+# Determine the winner of the round
 def fight(player, computer):
-    previous_score = var.score['Player']
-    winner = "L\'Ordinateur a"
+    previous_score = var.score['Player']  # Get player's score before the round
+    winner = "L\'Ordinateur a"  # Default winner is the computer
     if player == "Pierre" and computer == "Feuille":
         var.score["Computer"] += 1
     elif player == "Pierre" and computer == "Ciseaux":
@@ -61,24 +71,26 @@ def fight(player, computer):
     elif player == "Ciseaux" and computer == "Pierre":
         var.score["Computer"] += 1
     else:
-        return "Tie"
-    if previous_score != var.score["Player"]:
+        return "Tie"  # Draw
+    if previous_score != var.score["Player"]:  # If player's score has changed, they won the round
         winner = "Vous avez"
-    return winner
+    return winner  # Return the round winner
 
+# Check if someone has won the match
 def get_winner():
-    if var.score['Player'] == 2:
+    if var.score['Player'] == 2:  # Player victory
         print(Fore.GREEN + Style.BRIGHT + "🎉 Vous avez gagné la partie !\n")
         restart()
-    elif var.score['Computer'] == 2:
+    elif var.score['Computer'] == 2:  # Computer victory
         print(Fore.RED + Style.BRIGHT + "💻 L'Ordinateur a gagné la partie !\nDommage pour vous (soyez meilleur).\n")
         restart()
 
+# Restart prompt (yes or no)
 def restart():
     choice = input(Fore.CYAN + "Voulez-vous rejouer ? (y/n)\n").lower()
-    if choice == "n":
+    if choice == "n":  # Player wants to quit
         print(Fore.YELLOW + "Au revoir 👋")
         var.in_game = False
-    else:
+    else:  # Player wants to continue (reset scores)
         var.score["Computer"] = 0
         var.score["Player"] = 0
