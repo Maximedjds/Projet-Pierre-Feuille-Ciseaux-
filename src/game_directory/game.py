@@ -79,10 +79,26 @@ def fight(player, computer):
 # Check if someone has won the match
 def get_winner():
     if var.score['Player'] == 2:  # Player victory
-        print(Fore.GREEN + Style.BRIGHT + "🎉 Vous avez gagné la partie !\n")
+        print(Fore.GREEN + Style.BRIGHT + """  
+  _   _                                                                        _                          _   _        _ 
+ | | | |                                                                      | |                        | | (_)      | |
+ | | | | ___  _   _ ___    __ ___   _____ ____   __ _  __ _  __ _ _ __   ___  | | __ _   _ __   __ _ _ __| |_ _  ___  | |
+ | | | |/ _ \| | | / __|  / _` \ \ / / _ \_  /  / _` |/ _` |/ _` | '_ \ / _ \ | |/ _` | | '_ \ / _` | '__| __| |/ _ \ | |
+ \ \_/ / (_) | |_| \__ \ | (_| |\ V /  __// /  | (_| | (_| | (_| | | | |  __/ | | (_| | | |_) | (_| | |  | |_| |  __/ |_|
+  \___/ \___/ \__,_|___/  \__,_| \_/ \___/___|  \__, |\__,_|\__, |_| |_|\___| |_|\__,_| | .__/ \__,_|_|   \__|_|\___| (_)
+                                                 __/ |       __/ |                      | |                              
+                                                |___/       |___/                       |_|                              \n""")
         restart()
     elif var.score['Computer'] == 2:  # Computer victory
-        print(Fore.RED + Style.BRIGHT + "💻 L'Ordinateur a gagné la partie !\nDommage pour vous (soyez meilleur).\n")
+        print(Fore.RED + Style.BRIGHT + """  
+ _____      __        _                  
+|  _  \    / _|    (_) |                 
+| | | |___| |_ __ _ _| |_ ___  ___       
+| | | / _ \  _/ _` | | __/ _ \/ __|      
+| |/ /  __/ || (_| | | ||  __/\__ \_ _ _ 
+|___/ \___|_| \__,_|_|\__\___||___(_|_|_)
+                                         
+                                          \n""")
         restart()
 
 # Restart prompt (yes or no)
