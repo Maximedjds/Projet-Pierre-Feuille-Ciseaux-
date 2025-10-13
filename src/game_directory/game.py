@@ -6,8 +6,6 @@ from colorama import Fore, Style, init
 # Reset Colours
 init(autoreset=True)
 
-# Possible options
-options = ["Pierre","Feuille","Ciseaux"]
 
 # Starts the main game loop
 def game_loop():
@@ -44,15 +42,15 @@ def player_choice() -> str:
         time.sleep(1)
         return player_choice()  # Retry if input is invalid
     choice -= 1
-    print(Fore.GREEN + f"Vous avez choisi {options[choice]} !\n")
-    return options[choice]  # Return player's choice as a string (based on 'options' list)
+    print(Fore.GREEN + f"Vous avez choisi {var.options[choice]} !\n")
+    return var.options[choice]  # Return player's choice as a string (based on 'options' list)
 
 # Generate the computer's choice
 def computer_choice() -> str:
     random.seed()  # Generate a new seed for true randomness
     choice_index = random.randint(0, 2)
-    print(Fore.YELLOW + f"L'ordinateur a choisi {options[choice_index]} !\n")
-    return options[choice_index]  # Return computer's random choice
+    print(Fore.YELLOW + f"L'ordinateur a choisi {var.options[choice_index]} !\n")
+    return var.options[choice_index]  # Return computer's random choice
 
 # Determine the winner of the round
 def fight(player, computer):

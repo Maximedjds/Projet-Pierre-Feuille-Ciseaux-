@@ -3,3 +3,9 @@ score = { # Scoreboard
     "Player": 0,
     "Computer": 0
 }
+window = [1280,720]
+
+input_check = False
+
+# Possible options
+options = ["Pierre","Feuille","Ciseaux"]

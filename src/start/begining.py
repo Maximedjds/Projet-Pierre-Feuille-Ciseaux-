@@ -1,7 +1,7 @@
 from colorama import *
 import time
 from src.state import var
-
+from src.game_directory.graphic import game
 
 def begining():
     print(Fore.LIGHTBLUE_EX + """
@@ -26,16 +26,21 @@ def begining():
     /_/   /_/\___/_/  /_/   \___/  /_/    \___/\__,_/_/_/_/\___/   \____/_/____/\___/\__,_/\__,_/_/|_|""")
 
     print("\n\n\n╔════════════════════════════╗")
-    print("║  1. Lancer la partie       ║")
-    print("║  2. Quitter le jeu         ║")
+    print("║  1. Mode Terminal          ║")
+    print("║  2. Mode Graphique         ║")
+    print("║  3. Quitter le jeu         ║")
     print("╚════════════════════════════╝")
     choice = int(input(" Votre choix: "))
     print("\n")
-    if choice > 2 or choice < 1:
+    if choice > 3 or choice < 1:
         print(Fore.RED + "Valeur entrée incorrecte !\n")
         time.sleep(1)
         return begining()
     elif choice == 2:
+        var.in_game = False
+        return game.start_game()
+    elif choice == 3:
+        var.in_game = False
         print (Fore.RED + """  
   ___     _     _            _        _   
  / _ \   | |   (_)          | |      | |  
@@ -44,4 +49,3 @@ def begining():
 | | | |  | |_) | |  __/ | | | || (_) | |_       
 \_| |_/  |_.__/|_|\___|_| |_|\__\___/ \__|
                                           """)
-        var.in_game = False
