@@ -1,4 +1,6 @@
 # Imports
+import time
+
 import pygame
 import os
 
@@ -9,6 +11,8 @@ from src.game_directory.game import *
 # Colours
 GOLD = (255, 215, 0)
 WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
 BLUE = (0, 128, 255)
 DARK_BLUE = (0, 90, 200)
 BLACK = (0, 0, 0)
@@ -19,6 +23,9 @@ DARK_ORANGE = (255, 122, 0)
 rock_img = os.path.join("assets/images", "rock.png")
 paper_img = os.path.join("assets/images", "paper.png")
 scissors_img = os.path.join("assets/images", "scissors.png")
+
+# Game Data
+player_choice = []
 
 def start_game():
     pygame.init()
@@ -34,7 +41,10 @@ def start_game():
 
 # Show Main Menu
 def MAIN_MENU():
-    global default_font, title_font, screen
+    global default_font, title_font, screen, player_choice
+
+    player_choice = []
+    score['Player'], score['Computer'] = 0, 0
 
     # Draw Buttons
     PLAY = Button("Lancer une partie", None, 300, 400, 75, ORANGE, DARK_ORANGE, WHITE, default_font, None, GAME_SCREEN)
@@ -65,7 +75,10 @@ def MAIN_MENU():
 
 # Show Game Screen
 def GAME_SCREEN():
-    global default_font, title_font, screen
+    global default_font, title_font, screen, player_choice
+
+    if score['Player'] == 2 or score['Computer'] == 2:
+        score['Player'], score['Computer'] = 0, 0
 
     while True:
         # Reset Screen
@@ -79,6 +92,7 @@ def GAME_SCREEN():
         # Title
         title = title_font.render("Choisissez votre arme:", True, GOLD)
         screen.blit(title, ((window[0]/2) - (title.get_width()/2), 100))
+        player_choice = []
 
         # Create Buttons
         ROCK = Button(None, 300, 300, 200, 250, None, None, None, None, rock_img, lambda: player_select("Pierre"))
@@ -98,21 +112,21 @@ def GAME_SCREEN():
         
         pygame.display.flip()
 
-player_choice = []
 
 def player_select(choice):
     player_choice.append(choice)
-    if len(player_choice) < 2: # Anti double click
-        return
-    player_choice.pop(0)
-    print(player_choice[0])
     FIGHT_SCREEN()
+    player_choice.pop(0)
+
 
 def FIGHT_SCREEN():
-    global default_font, title_font, screen, player_choice
+    global default_font, title_font, screen, player_choice, CONTINUE
 
     computer_choice = random.choice(options)
     result = fight(player_choice[0], computer_choice)
+
+    countdown_value = -1
+
 
     while True:
         # Reset Screen
@@ -124,26 +138,72 @@ def FIGHT_SCREEN():
         screen.blit(bg, (0, 0))
 
         # Title
-        title = title_font.render("Résultat du combat:", True, GOLD)
-        screen.blit(title, ((window[0]/2) - (title.get_width()/2), 100))
+        #title = title_font.render("Résultat du combat:", True, GOLD)
+        #screen.blit(title, ((window[0]/2) - (title.get_width()/2), 50))
+
+        CONTINUE = None
+
+        # Countdown
+        if countdown_value < 2:
+            countdown_value += 1
+            countdown = title_font.render(f'{options[countdown_value]} !', True, WHITE)
+            screen.blit(countdown, ((window[0]/2) - (countdown.get_width()/2), 135))
+
+        if countdown_value < 2:
+            # Show Hands
+            player_hand = pygame.image.load(os.path.join("assets/images/player", "Pierre.png"))
+            player_hand = pygame.transform.scale(player_hand,(player_hand.get_width() * 2, player_hand.get_height() * 2))
+            screen.blit(player_hand, (0, 250))
+
+            computer_hand = pygame.image.load(os.path.join("assets/images/computer", "Pierre.png"))
+            computer_hand = pygame.transform.scale(computer_hand,(computer_hand.get_width() * 2, computer_hand.get_height() * 2))
+            screen.blit(computer_hand, (window[0] - computer_hand.get_width(), 240))
+        else:
+            player_hand = pygame.image.load(os.path.join("assets/images/player", f"{player_choice[0]}.png"))
+            player_hand = pygame.transform.scale(player_hand,(player_hand.get_width() * 2, player_hand.get_height() * 2))
+            screen.blit(player_hand, (0, 255))
+
+            computer_hand = pygame.image.load(os.path.join("assets/images/computer", f"{computer_choice}.png"))
+            computer_hand = pygame.transform.scale(computer_hand,(computer_hand.get_width() * 2, computer_hand.get_height() * 2))
+            screen.blit(computer_hand, (window[0] - computer_hand.get_width(), 235))
+
+            # Display Result
+            if result == "Tie":
+                result_text = title_font.render("Égalité!", True, GOLD)
+            else:
+                result_text = title_font.render(f"{result} gagné le round!", True, GOLD)
+            screen.blit(result_text, ((window[0] / 2) - (result_text.get_width() / 2), 25))
+
+            # Show Score
+            game_score = default_font.render(f"Score: {score['Player']} - {score['Computer']}", True, WHITE)
+            screen.blit(game_score, ((window[0] / 2) - (game_score.get_width() / 2), 575))
+
+            # Continue Button
+            CONTINUE = Button("Continuer", window[0]-265, 625, 250, 60, ORANGE, DARK_ORANGE, WHITE, default_font, None, GAME_SCREEN)
+
+            # Get Winner
+            if score['Player'] == 2:
+                end_text = title_font.render("Victoire !", True, GREEN)
+                screen.blit(end_text, ((window[0]/2)-(end_text.get_width()/2), 300))
+            elif score['Computer'] == 2:
+                end_text = title_font.render("Défaite !", True, RED)
+                screen.blit(end_text, ((window[0]/2)-(end_text.get_width()/2), 300))
+
+        if CONTINUE is not None:
+            CONTINUE.check_input(screen)
+            CONTINUE.draw(screen)
 
         # Display Choices
-        player_text = default_font.render(f"Vous avez choisi: {player_choice[0]}", True, WHITE)
-        computer_text = default_font.render(f"L'ordinateur a choisi: {computer_choice}", True, WHITE)
-        screen.blit(player_text, (200, 300))
-        screen.blit(computer_text, (200, 400))
+        #player_text = default_font.render(f"Vous avez choisi: {player_choice[0]}", True, WHITE)
+        #computer_text = default_font.render(f"L'ordinateur a choisi: {computer_choice}", True, WHITE)
+        #screen.blit(player_text, (200, 300))
+        #screen.blit(computer_text, (200, 400))
 
-        # Display Result
-        if result == "Tie":
-            result_text = default_font.render("Égalité!", True, WHITE)
-        else:
-            result_text = default_font.render(f"{result} gagné le round!", True, WHITE)
-        screen.blit(result_text, ((window[0]/2) - (result_text.get_width()/2), 500))
+
 
         # Continue Button
-        CONTINUE = Button("Continuer", None, 600, 250, 60, ORANGE, DARK_ORANGE, WHITE, default_font, None, GAME_SCREEN)
-        CONTINUE.check_input(screen)
-        CONTINUE.draw(screen)
+        #CONTINUE.check_input(screen)
+        #CONTINUE.draw(screen)
 
         # Quit Event
         for event in pygame.event.get():
@@ -151,6 +211,11 @@ def FIGHT_SCREEN():
                 pygame.quit()
         
         pygame.display.flip()
+
+        if countdown_value <= 2:
+            time.sleep(1)
+            if countdown_value == 2:
+                countdown_value+=1
 
 # Start Game (Remove Later)
 start_game()
