@@ -6,7 +6,7 @@ class Button:
     def __init__(self, text, x, y, width, height,
                  inactive_color, active_color, base_color,
                  font, image=None, action=None, radius=12,
-                 click_sound=None):  # 🔊 nouveau paramètre
+                 click_sound=None):
         self.text = text
         self.font = font
         self.x = x
@@ -19,16 +19,20 @@ class Button:
         self.action = action
         self.image = image
         self.radius = radius
-        self.click_sound = click_sound  # 🔊 stocke le son
+        self.click_sound = click_sound
 
+        # Disable the text if has image
         if self.image is not None:
             self.text = None
 
+        # Center the button if x coordinate is None
         if self.x is None and self.width is not None:
             self.x = (window[0] / 2) - (self.width / 2)
 
+
     def draw(self, screen):
-        """Dessine le texte du bouton (si pas d’image)."""
+        """Draw the button on the screen."""
+        # Ignore if it has image
         if self.image is not None:
             return
         surface = self.font.render(self.text, True, self.base_color)
@@ -36,11 +40,10 @@ class Button:
         screen.blit(surface, rect)
 
     def check_input(self, screen, events):
-        """Gère le survol, le clic et l’affichage du bouton."""
+        """Manage mouse interaction with buttons (Hover/Click)."""
         mouse = pygame.mouse.get_pos()
         hovered = self.x + self.width > mouse[0] > self.x and self.y + self.height > mouse[1] > self.y
 
-        # === Bouton avec image ===
         if self.image is not None:
             if hovered:
                 img = pygame.transform.smoothscale(
@@ -57,8 +60,6 @@ class Button:
             pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.width, self.height),
                              width=2, border_radius=self.radius)
             self.draw(screen)
-
-        # === Détecte le clic une seule fois par événement ===
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if hovered and self.action is not None:

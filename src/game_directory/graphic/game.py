@@ -3,7 +3,7 @@ import time
 
 import pygame
 import os
-import random
+import ctypes
 
 from src.game_directory.graphic.button import Button
 from src.state.var import *
@@ -29,61 +29,82 @@ scissors_img = os.path.join("assets/images", "scissors.png")
 player_choice = []
 
 def start_game():
+    """Initialise the game and start the game."""
+
     pygame.init()
-    pygame.mixer.init()  # 🔊 initialisation audio
+
+    # Sound Init
+    pygame.mixer.init()
 
     global default_font, title_font, screen, CLICK_SOUND
 
-    # 🔊 chargement du son de clic
+    # Load Sound
     CLICK_SOUND = pygame.mixer.Sound(os.path.join("assets", "son", "mixkit-arcade-game-jump-coin-216.wav"))
     CLICK_SOUND.set_volume(0.5)
 
-    # 🔊 musique de fond
+    # Load Musique
     pygame.mixer.music.load(os.path.join("assets", "son", "mixkit-tech-house-vibes-130.mp3"))  # <-- change le chemin ici
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play(-1)  # boucle infinie
 
+    ## Initialize Game
+
+    #Set Icon
+    icon = pygame.image.load(os.path.join("assets/images", "icon.png"))
+    pygame.display.set_icon(icon)
+
+    # Screen Size
     screen = pygame.display.set_mode((window[0], window[1]))
+
+    # Caption
     pygame.display.set_caption("Pierre-Feuille-Ciseaux (Deluxe Edition)")
+
+    # Fonts
     default_font = pygame.font.Font(os.path.join("assets/fonts", "NFPixels-Regular.ttf"), 50)
     title_font = pygame.font.Font(os.path.join("assets/fonts", "NFPixels-Regular.ttf"), 100)
 
+    # Focus Game Window
+    ctypes.windll.user32.SetForegroundWindow(pygame.display.get_wm_info()['window'])
+
     MAIN_MENU()
 
-# Show Main Menu
 def MAIN_MENU():
-    global default_font, title_font, screen, player_choice
-
-    player_choice = []
-    score['Player'], score['Computer'] = 0, 0
-
-# MAIN MENU
-def MAIN_MENU():
+    """Create and manage game main menu."""
     global default_font, title_font, screen, CLICK_SOUND
 
+    score['Player'], score['Computer'] = 0, 0
+
+
+    # Create Buttons
     PLAY = Button("Lancer une partie", None, 300, 400, 75,
                   ORANGE, DARK_ORANGE, WHITE, default_font,
                   None, GAME_SCREEN, click_sound=CLICK_SOUND)
 
     QUIT = Button("Quitter", None, 400, 400, 75,
                   ORANGE, DARK_ORANGE, WHITE, default_font,
-                  None, pygame.quit, click_sound=CLICK_SOUND)
+                  None, quit_game, click_sound=CLICK_SOUND)
 
     while True:
+        # Clear Window
         screen.fill(BLACK)
 
+        # Set Background
         bg = pygame.image.load(os.path.join("assets/images", "bg.png"))
         bg = pygame.transform.scale(bg, (window[0], window[1]))
         screen.blit(bg, (0, 0))
 
+        # Game Tile
         title = title_font.render("Pierre-Feuille-Ciseaux", True, GOLD)
         screen.blit(title, ((window[0]/2) - (title.get_width()/2), 100))
 
+        # Quit Input (X)
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
+                return
 
+        # Update Buttons
         for button in [PLAY, QUIT]:
             button.check_input(screen, events)
 
@@ -92,22 +113,29 @@ def MAIN_MENU():
 
 # GAME SCREEN
 def GAME_SCREEN():
+    """Create and manage the game screen"""
     global default_font, title_font, screen, player_choice
 
+
+    # Reset scores if previous game end
     if score['Player'] == 2 or score['Computer'] == 2:
         score['Player'], score['Computer'] = 0, 0
 
     while True:
+        # Clear Window
         screen.fill(BLACK)
 
+        # Set background
         bg = pygame.image.load(os.path.join("assets/images", "bg_game.png"))
         bg = pygame.transform.scale(bg, (window[0], window[1]))
         screen.blit(bg, (0, 0))
 
+        # Screen Title
         title = title_font.render("Choisissez votre arme:", True, GOLD)
         screen.blit(title, ((window[0]/2) - (title.get_width()/2), 100))
         player_choice = []
 
+        # Create Buttons
         ROCK = Button(None, 300, 300, 200, 250,
                       None, None, None, None,
                       rock_img, lambda: player_select("Pierre"), click_sound=CLICK_SOUND)
@@ -121,11 +149,13 @@ def GAME_SCREEN():
                         ORANGE, DARK_ORANGE, WHITE,
                         default_font, None, MAIN_MENU, click_sound=CLICK_SOUND)
 
+        # Quit Events
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                pygame.quit()
+                quit_game()
 
+        # Update Buttons
         for button in [ROCK, PAPER, SCISSORS, RETURN]:
             button.check_input(screen, events)
 
@@ -133,16 +163,18 @@ def GAME_SCREEN():
 
 
 def player_select(choice):
+    """Send the player choice to the Fight manager"""
     player_choice.append(choice)
     FIGHT_SCREEN()
     player_choice.pop(0)
 
 
 
-# FIGHT SCREEN
 def FIGHT_SCREEN():
+    """Fight screen display and management."""
     global default_font, title_font, screen, player_choice, CONTINUE, CLICK_SOUND
 
+    # Generate 
     computer_choice = random.choice(options)
     result = fight(player_choice[0], computer_choice)
 
@@ -150,15 +182,13 @@ def FIGHT_SCREEN():
 
 
     while True:
+        # Clear window
         screen.fill(BLACK)
 
+        # Background
         bg = pygame.image.load(os.path.join("assets/images", "bg_game.png"))
         bg = pygame.transform.scale(bg, (window[0], window[1]))
         screen.blit(bg, (0, 0))
-
-        # Title
-        #title = title_font.render("Résultat du combat:", True, GOLD)
-        #screen.blit(title, ((window[0]/2) - (title.get_width()/2), 50))
 
         CONTINUE = None
 
@@ -198,7 +228,12 @@ def FIGHT_SCREEN():
             screen.blit(game_score, ((window[0] / 2) - (game_score.get_width() / 2), 575))
 
             # Continue Button
-            CONTINUE = Button("Continuer", window[0]-265, 625, 250, 60, ORANGE, DARK_ORANGE, WHITE, default_font, None, GAME_SCREEN)
+            CONTINUE = Button(
+                "Continuer", window[0] - 265, 625, 250, 60,
+                ORANGE, DARK_ORANGE, WHITE,
+                default_font, None, GAME_SCREEN,
+                click_sound=CLICK_SOUND
+            )
 
             # Get Winner
             if score['Player'] == 2:
@@ -208,35 +243,27 @@ def FIGHT_SCREEN():
                 end_text = title_font.render("Défaite !", True, RED)
                 screen.blit(end_text, ((window[0]/2)-(end_text.get_width()/2), 300))
 
-        if CONTINUE is not None:
-            CONTINUE.check_input(screen)
-            CONTINUE.draw(screen)
-
-        # Display Choices
-        #player_text = default_font.render(f"Vous avez choisi: {player_choice[0]}", True, WHITE)
-        #computer_text = default_font.render(f"L'ordinateur a choisi: {computer_choice}", True, WHITE)
-        #screen.blit(player_text, (200, 300))
-        #screen.blit(computer_text, (200, 400))
-
-
-
-        # Continue Button
-        #CONTINUE.check_input(screen)
-        #CONTINUE.draw(screen)
-
+        # Quit Event
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                pygame.quit()
+                quit_game()
+                return
 
-        CONTINUE.check_input(screen, events)
+        # Update Button if existing
+        if CONTINUE is not None:
+            CONTINUE.check_input(screen, events)
+            CONTINUE.draw(screen)
 
         pygame.display.flip()
 
+        # Timer
         if countdown_value <= 2:
             time.sleep(1)
             if countdown_value == 2:
-                countdown_value+=1
+                countdown_value += 1
 
-# Start Game (Remove Later)
-start_game()
+def quit_game():
+    """Close the game proprely"""
+    pygame.quit()
+    exit()
